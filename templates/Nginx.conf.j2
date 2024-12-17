@@ -1,0 +1,14 @@
+server {
+       listen {{ listen_port }};
+       listen [::]:{{ listen_port }};
+
+       server_name {{ Nginx_server_name }};
+
+       root {{ Nginx_root_files }};
+       index index.html;
+
+       location / {
+               allow {{ allowed_IP }};
+               try_files $uri $uri/ =404;
+       }
+}

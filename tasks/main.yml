@@ -1,0 +1,43 @@
+---
+# tasks file for Nginx-dep-role
+- name: Install nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: yes
+    
+- name: Create the root file for the new server 
+  ansible.builtin.file:
+    path: "{{ Nginx_root_files }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+   
+- name: Add the content to be displayed
+  ansible.builtin.copy:
+    content: "<h1>Welcome to My New Site configured by ansible</h1>"
+    dest: "{{ Nginx_root_files }}/index.html"
+    owner: root
+    group: root
+    mode: '0644'
+   
+- name: Configure the Nginx server 
+  ansible.builtin.template:
+    src: Nginx.conf.j2
+    dest: /etc/nginx/sites-available/my_new_site
+    mode: '0644'
+    owner: root
+    group: root
+      
+- name: Enable the new server
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/my_new_site
+    path: /etc/nginx/sites-enabled/my_new_site
+    state: link
+      
+- name: Start the nginx service 
+  ansible.builtin.service:
+    name: nginx
+    state: started
+  
